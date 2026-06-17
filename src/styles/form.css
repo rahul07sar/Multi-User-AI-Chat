@@ -1,0 +1,14 @@
+/**
+ * Form styles.
+ *
+ * Defines shared input, label, and form layout rules.
+ */
+
+.form-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}

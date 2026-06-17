@@ -1,0 +1,17 @@
+/**
+ * Button styles.
+ *
+ * Defines shared button presentation rules.
+ */
+
+.btn {
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-dark);
+}

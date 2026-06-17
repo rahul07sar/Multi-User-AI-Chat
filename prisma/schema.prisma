@@ -1,0 +1,132 @@
+/**
+ * Prisma schema.
+ *
+ * Defines the application's relational data model, enums, and Prisma client.
+ */
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum AuditLogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model ChatRoom {
+  id                String   @id @default(cuid())
+  name              String?
+  description       String?
+  isInvitesEnabled  Boolean  @default(true)
+  maxParticipants   Int      @default(25)
+
+  passcode          String   @unique
+  passcodeHash      String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users             ChatUser[]
+  messages          ChatMessage[]
+  invites           ChatInvite[]
+}
+
+model ChatUser {
+  id         String    @id @default(cuid())
+  name       String
+  roomId      String
+
+  lastSeenAt DateTime?
+  isTyping   Boolean   @default(false)
+  typingAt   DateTime?
+
+  createdAt  DateTime  @default(now())
+
+  room       ChatRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  messages   ChatMessage[]
+
+  @@unique([name, roomId])
+
+  @@index([roomId, lastSeenAt])
+  @@index([roomId, isTyping])
+}
+
+model ChatMessage {
+  id             String      @id @default(cuid())
+  content        String
+  role           MessageRole
+  roomId         String
+  userId         String?
+
+  attachmentName String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentSize Int?
+  attachmentText String?
+
+  createdAt      DateTime    @default(now())
+
+  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user ChatUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([roomId, createdAt])
+}
+
+model ChatInvite {
+  id        String    @id @default(cuid())
+  roomId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([expiresAt])
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  scope       String
+  identifier  String
+  windowStart DateTime
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([scope, identifier, windowStart])
+  @@index([updatedAt])
+}
+
+model AuditLog {
+  id         String        @id @default(cuid())
+  eventType  String
+  level      AuditLogLevel
+  outcome    String
+  requestId  String?
+  roomId     String?
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  statusCode Int?
+  details    Json?
+  createdAt  DateTime      @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([requestId, createdAt])
+  @@index([roomId, createdAt])
+  @@index([userId, createdAt])
+}

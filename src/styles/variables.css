@@ -1,0 +1,23 @@
+/**
+ * Design variables.
+ *
+ * Defines shared CSS custom properties for the application.
+ */
+
+:root {
+  --color-background: #0f172a;
+  --color-surface: #020617;
+  --color-border: rgba(148, 163, 184, 0.25);
+
+  --color-primary: #38bdf8;
+  --color-primary-dark: #082f49;
+
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+
+  --container-width: 1200px;
+}

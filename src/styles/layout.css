@@ -1,0 +1,10 @@
+/**
+ * Layout styles.
+ *
+ * Defines shared page-level layout and shell rules.
+ */
+
+.page-container {
+  width: min(var(--container-width), calc(100% - 32px));
+  margin: 0 auto;
+}
